@@ -54,8 +54,10 @@ override with `-p:ValheimPath=...` or the `VALHEIM_INSTALL` environment variable
 scripts/package.sh      # -> dist/BronzeBattleaxe-<version>.zip
 ```
 
-Builds in Release and zips `BronzeBattleaxe.dll` with the files in `thunderstore/` (manifest, README, changelog, icon),
-all at the zip root as Thunderstore requires. It refuses to run unless the version matches in
+Builds in Release, copies the DLL into `thunderstore/plugins/Ixillia.BronzeBattleaxe/` (git-ignored; the folder is kept
+with a `.gitkeep`), and zips the `thunderstore/` package layout: `manifest.json`, `README.md`, `CHANGELOG.md` and
+`icon.png` at the zip root, with the DLL under `plugins/`.
+It refuses to run unless the version matches in
 `src/BronzeBattleaxePlugin.cs` (`PluginVersion`), `BronzeBattleaxe.csproj` (`<Version>`) and
 `thunderstore/manifest.json`, and `thunderstore/CHANGELOG.md` has an entry for it.
 `thunderstore/icon.png` is drawn by `scripts/make_icon.py` (needs Pillow); replace it with your own art if you like.

@@ -1,4 +1,4 @@
 # Changelog
 
-## 0.1.2
+## 1.0.0
 - Initial release: Bronze Battleaxe with Axes-skill-scaled swing speed.

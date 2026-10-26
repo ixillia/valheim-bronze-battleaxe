@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds a Thunderstore package: dist/BronzeBattleaxe-<version>.zip
+# Builds a Thunderstore package: dist/<name>-<version>.zip from the thunderstore/ folder + the built DLL.
 # Usage: scripts/package.sh            (extra args are passed to `dotnet build`, e.g. -p:ValheimPath=...)
 set -euo pipefail
 
@@ -31,11 +31,15 @@ out="dist/${name}-${plugin_version}.zip"
 mkdir -p dist
 rm -f "$out"
 
-# Files must sit at the zip root (not inside a folder) or Thunderstore rejects the package.
-staging=$(mktemp -d)
-trap 'rm -rf "$staging"' EXIT
-cp bin/Release/BronzeBattleaxe.dll thunderstore/manifest.json thunderstore/README.md thunderstore/CHANGELOG.md thunderstore/icon.png "$staging/"
-(cd "$staging" && zip -q -X "$OLDPWD/$out" BronzeBattleaxe.dll manifest.json README.md CHANGELOG.md icon.png)
+# Thunderstore wants manifest/README/icon/CHANGELOG at the zip root (not inside a wrapping folder);
+# the DLL goes in a subfolder, which r2modman/Thunderstore Mod Manager install under BepInEx/.
+# The built DLL is copied into thunderstore/ (git-ignored) so that folder is the single package layout.
+plugin_dir="thunderstore/plugins/Ixillia.BronzeBattleaxe"
+mkdir -p "$plugin_dir"
+cp bin/Release/BronzeBattleaxe.dll "$plugin_dir/"
+
+# Zip an explicit list, so stray files in thunderstore/ (old zips, .gitkeep) never end up in the package.
+(cd thunderstore && zip -q -r -X "../$out" manifest.json README.md CHANGELOG.md icon.png plugins -x '*.gitkeep')
 
 echo "Created $out"
 unzip -l "$out"

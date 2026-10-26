@@ -76,3 +76,6 @@ bin/
 obj/
 !/BronzeBattleaxe.csproj
 dist/
+
+# Built DLL copied into the package layout by scripts/package.sh (the folder itself is kept via .gitkeep)
+/thunderstore/plugins/**/*.dll

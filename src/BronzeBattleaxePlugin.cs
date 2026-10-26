@@ -19,7 +19,7 @@ namespace BronzeBattleaxe
     {
         public const string PluginGuid = "com.ixillia.bronzebattleaxe";
         public const string PluginName = "Bronze Battleaxe";
-        public const string PluginVersion = "0.1.2";
+        public const string PluginVersion = "1.0.0";
 
         /// <summary>Vanilla prefab we clone: the iron-tier two-handed battleaxe.</summary>
         private const string BasePrefab = "Battleaxe";
