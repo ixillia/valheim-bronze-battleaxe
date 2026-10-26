@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <AssemblyName>BronzeBattleaxe</AssemblyName>
+    <RootNamespace>BronzeBattleaxe</RootNamespace>
+    <Version>0.1.2</Version>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <DebugType>embedded</DebugType>
+    <!-- Lets `dotnet build` work on Linux without Mono / Visual Studio. -->
+    <RestorePackagesWithLockFile>false</RestorePackagesWithLockFile>
+    <!-- JotunnLib's props reference "publicized" game assemblies that only its optional prebuild task generates. -->
+    <NoWarn>$(NoWarn);MSB3245</NoWarn>
+  </PropertyGroup>
+
+  <!--
+    Path to the Valheim install. Override it with `-p:ValheimPath=/path/to/Valheim`
+    or the VALHEIM_INSTALL environment variable.
+  -->
+  <PropertyGroup>
+    <ValheimPath Condition="'$(ValheimPath)' == '' And '$(VALHEIM_INSTALL)' != ''">$(VALHEIM_INSTALL)</ValheimPath>
+    <ValheimPath Condition="'$(ValheimPath)' == ''">$(HOME)/.local/share/Steam/steamapps/common/Valheim</ValheimPath>
+    <ManagedPath>$(ValheimPath)/valheim_Data/Managed</ManagedPath>
+    <BepInExCore>$(ValheimPath)/BepInEx/core</BepInExCore>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JotunnLib" Version="2.30.2" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="BepInEx">
+      <HintPath>$(BepInExCore)/BepInEx.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(BepInExCore)/0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="assembly_valheim">
+      <HintPath>$(ManagedPath)/assembly_valheim.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(ManagedPath)/UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(ManagedPath)/UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Optional: copy the built dll straight into the game's plugins folder. -->
+  <Target Name="DeployToGame" AfterTargets="Build" Condition="'$(DeployToGame)' == 'true'">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ValheimPath)/BepInEx/plugins/BronzeBattleaxe" />
+  </Target>
+
+</Project>
