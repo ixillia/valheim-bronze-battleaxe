@@ -27,7 +27,7 @@ fi
 dotnet build BronzeBattleaxe.csproj -c Release "$@"
 
 name=$(sed -n 's/.*"name": *"\([^"]*\)".*/\1/p' thunderstore/manifest.json)
-out="dist/${name}-${plugin_version}.zip"
+out="dist/Ixillia-${name}-${plugin_version}.zip"
 mkdir -p dist
 rm -f "$out"
 

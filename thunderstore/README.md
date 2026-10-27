@@ -3,8 +3,10 @@
 Adds a **Bronze Battleaxe**: a bronze-tier take on the iron Battleaxe, for when you want a two-handed axe
 before you have the iron for one.
 
-It reuses the vanilla Battleaxe's animations, hit effects and sounds. The metal parts of the model and the
-inventory icon are tinted bronze.
+It reuses the vanilla Battleaxe's animations, hit effects and sounds, with its own bronze model, textures and
+inventory icon.
+
+*Model by [leonsavelind](https://skfb.ly/6uKOp), CC BY 4.0 - see [Credits](#credits).*
 
 ## Crafting
 
@@ -47,7 +49,7 @@ The Bronze Battleaxe swings faster the higher your Axes skill: +0% at skill 0, u
 
 ## Multiplayer
 
-The server and every player need the mod installed. Versions must match on the minor number (0.1.x with 0.1.x).
+The server and every player need the mod installed. Versions must match on the minor number (1.1.x with 1.1.x).
 
 ## Console
 
@@ -56,4 +58,14 @@ The server and every player need the mod installed. Versions must match on the m
 ## Known limitations
 
 - Only English text is provided; other languages show the English name.
-- Appearance is the iron Battleaxe's model, recoloured at load time, not a bespoke model.
+- If the bundled model fails to load, the item falls back to the iron Battleaxe's model recoloured bronze (a warning is logged).
+
+## Credits
+
+The 3D model is based on **"Glass Battleaxe, 1958 Tris, Low Poly"** by [leonsavelind](https://sketchfab.com/leonsavelind)
+([source](https://skfb.ly/6uKOp)), licensed under
+[Creative Commons Attribution 4.0](http://creativecommons.org/licenses/by/4.0/).
+Changes: rotated and scaled to fit Valheim's battleaxe, UVs and normals kept, textures re-coloured from glass to
+bronze (albedo, metallic/smoothness), ambient occlusion baked into the albedo.
+
+Built with [Jötunn](https://valheim-modding.github.io/Jotunn/).

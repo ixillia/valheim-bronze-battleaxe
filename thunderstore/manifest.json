@@ -1,6 +1,6 @@
 {
     "name": "BronzeBattleaxe",
-    "version_number": "1.0.0",
+    "version_number": "1.1.0",
     "website_url": "https://github.com/ixillia/valheim-bronze-battleaxe",
     "description": "Adds a bronze-tier Battleaxe: Forge level 2, lighter and weaker than the iron one, with a swing that speeds up as your Axes skill grows.",
     "dependencies": [

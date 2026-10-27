@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
 using Jotunn.Entities;
+using Jotunn.Managers;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace BronzeBattleaxe
 {
     /// <summary>
-    /// Gives the cloned battleaxe a bronze look without shipping any art: the iron model's
-    /// diffuse atlas and the inventory icon are re-coloured at load time.
-    /// Purely cosmetic - if anything here fails the item just keeps the iron look.
+    /// Gives the cloned battleaxe its bronze look: the bundled model (BronzeModel) plus a rendered icon.
+    /// If the model can't be loaded it falls back to re-colouring the iron model's diffuse atlas and icon at
+    /// load time. Purely cosmetic - if everything here fails the item just keeps the iron look.
     /// </summary>
     internal static class BronzeAppearance
     {
@@ -24,14 +25,79 @@ namespace BronzeBattleaxe
                 return;
             }
 
+            var shared = item.ItemDrop.m_itemData.m_shared;
+
+            var customModel = false;
             try
             {
-                TintModel(item.ItemPrefab);
-                TintIcons(item.ItemDrop.m_itemData.m_shared);
+                BronzeModel.Apply(item.ItemPrefab);
+                customModel = true;
+            }
+            catch (Exception e)
+            {
+                BronzeBattleaxePlugin.Log.LogWarning($"Could not load the bronze model, using the recoloured iron one: {e}");
+            }
+
+            try
+            {
+                if (!customModel)
+                {
+                    TintModel(item.ItemPrefab);
+                }
+
+                // Recoloured iron icon: the final icon for the fallback look, a placeholder until the render below lands.
+                TintIcons(shared);
             }
             catch (Exception e)
             {
                 BronzeBattleaxePlugin.Log.LogWarning($"Could not re-colour the Bronze Battleaxe, keeping the iron look: {e}");
+            }
+
+            if (customModel)
+            {
+                RenderIcon(item.ItemPrefab, shared);
+            }
+        }
+
+        /// <summary>
+        /// The prefab's long axis is Z and the blade lies in its X-Z plane. Jötunn's camera looks down -Z with the
+        /// prefab's rotation applied, so this turns the axe to face the camera with the head to the upper right.
+        /// </summary>
+        private static readonly Quaternion IconRotation = Quaternion.LookRotation(new Vector3(-1f, 1f, 0f), Vector3.forward);
+
+        private static void RenderIcon(GameObject prefab, ItemDrop.ItemData.SharedData shared)
+        {
+            // Jötunn only renders objects that are active in the hierarchy, and the item clone lives under its
+            // inactive prefab container, so render a short-lived copy of just the model (no network components).
+            var proxy = new GameObject("BronzeBattleaxeIcon");
+            try
+            {
+                var model = prefab.GetComponentInChildren<MeshFilter>(true).gameObject;
+                UnityEngine.Object.Instantiate(model, proxy.transform, false);
+
+                var sprite = RenderManager.Instance.Render(new RenderManager.RenderRequest(proxy)
+                {
+                    Width = 128,
+                    Height = 128,
+                    Rotation = IconRotation,
+                });
+
+                if (sprite != null)
+                {
+                    shared.m_icons = new[] { sprite };
+                }
+                else
+                {
+                    BronzeBattleaxePlugin.Log.LogWarning("Icon render returned nothing, keeping the placeholder icon");
+                }
+            }
+            catch (Exception e)
+            {
+                BronzeBattleaxePlugin.Log.LogWarning($"Could not render the Bronze Battleaxe icon, keeping the placeholder: {e}");
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(proxy);
             }
         }
 

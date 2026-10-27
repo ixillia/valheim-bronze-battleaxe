@@ -6,7 +6,7 @@
     <Nullable>disable</Nullable>
     <AssemblyName>BronzeBattleaxe</AssemblyName>
     <RootNamespace>BronzeBattleaxe</RootNamespace>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <DebugType>embedded</DebugType>
@@ -53,7 +53,28 @@
       <HintPath>$(ManagedPath)/UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <!-- The game's modules are built against netstandard 2.1; net48's reference facade is 2.0. -->
+    <Reference Include="netstandard">
+      <HintPath>$(ManagedPath)/netstandard.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>$(ManagedPath)/UnityEngine.ImageConversionModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
+
+  <!-- Model + textures (see scripts/fit_model.py), loaded at runtime by BronzeModel. -->
+  <ItemGroup>
+    <EmbeddedResource Include="assets/*.obj;assets/*.png;assets/*.trail" LogicalName="BronzeBattleaxe.assets.%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <!-- Referencing the game's netstandard drags its sibling Unity/game DLLs into bin/ as "dependencies"; keep them out. -->
+  <Target Name="KeepGameAssembliesOut" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="$([System.String]::Copy('%(FullPath)').StartsWith('$(ManagedPath)'))" />
+    </ItemGroup>
+  </Target>
 
   <!-- Optional: copy the built dll straight into the game's plugins folder. -->
   <Target Name="DeployToGame" AfterTargets="Build" Condition="'$(DeployToGame)' == 'true'">
